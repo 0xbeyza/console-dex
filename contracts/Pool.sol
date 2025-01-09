@@ -152,7 +152,7 @@ contract Pool
 
                         tokenB.approve(address(this), amountIn);
 
-                        tokenB.transferFrom(msg.sender, address(this, amountIn);
+                        tokenB.transferFrom(msg.sender, address(this), amountIn);
                         tokenA.transferFrom(address(this),msg.sender, swapTokenRatio);
                     }
                 }
