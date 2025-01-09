@@ -31,7 +31,8 @@ contract Pool
                 tokenB.transferFrom(msg.sender, address(this), 100);
             }
 
-    // 1.
+    // 1. Add Liquidity
+
                  //  Add Liquidity for tokenA
                 function addLiquidityA(uint256 amount) public 
                 { 
@@ -68,7 +69,8 @@ contract Pool
                     tokenA.transferFrom(msg.sender,address(this), amount*ratio);
                 }
 
-    // 2.
+    // 2. Remove Liqudity
+
                 // Remove Liquidity for tokenA
                 
                 function removeLiquidity(uint256 amount) public 
@@ -111,30 +113,28 @@ contract Pool
 
     // 3. Swap Tokens
 
-                // DÜZELTİLECEK
-
-                // function swap(uint256 amountIn, bool swapToken0ForToken1) public 
-                // {
-                //     if(swapToken0ForToken1)
-                //     {
-                //         require(amountIn < tokenA.balanceOf(address(this)), "Amount must be lower than pool balance");
-                //         tokenA.approve(address(this), amountIn);
-                //         tokenA.transferFrom(address(this), msg.sender, amountIn);
-                //         tokenB.transferFrom(msg.sender, address(this), amountIn*ratio);
-                //     }
-                //     else
-                //     {
-                //         require(amountIn < tokenB.balanceOf(address(this)), "Amount must be lower than pool balance");
-                //         tokenB.approve(address(this), amountIn);
-                //         tokenB.transferFrom(address(this), msg.sender, amountIn);
-                //         tokenA.transferFrom(msg.sender, address(this), amountIn*ratio);
-                //     }
-                // }
+                function swap(uint256 amountIn, bool swapToken0ForToken1) public 
+                {
+                    if(swapToken0ForToken1)
+                    {
+                        require(amountIn < tokenA.balanceOf(address(this)), "Amount must be lower than pool balance");
+                        tokenA.approve(address(this), amountIn);
+                        tokenA.transferFrom(address(this), msg.sender, amountIn);
+                        tokenB.transferFrom(msg.sender, address(this), amountIn*ratio);
+                    }
+                    else
+                    {
+                        require(amountIn < tokenB.balanceOf(address(this)), "Amount must be lower than pool balance");
+                        tokenB.approve(address(this), amountIn);
+                        tokenB.transferFrom(address(this), msg.sender, amountIn);
+                        tokenA.transferFrom(msg.sender, address(this), amountIn*ratio);
+                    }
+                }
 
     // 4. Show Balance
-    function showBalance() public view returns (uint256 ,uint256 ,uint256 ,uint256)
-    {
-                 return (tokenA.balanceOf(address(this)), tokenB.balanceOf(address(this)) , balanceA, balanceB);
 
-    }
+                function showBalance() public view returns (uint256 ,uint256 ,uint256 ,uint256)
+                {
+                    return (tokenA.balanceOf(address(this)), tokenB.balanceOf(address(this)) , balanceA, balanceB);
+                }
 }
