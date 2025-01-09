@@ -137,7 +137,7 @@ contract Pool
 
                         require(amountIn > 0, "Amount must be greater than 0");
                         require(amountIn < tokenA.balanceOf(msg.sender), "You do not have enough tokenA for this swap");
-                        require(amountIn < tokenA.balanceOf(address(this)), "Amount must be lower than pool balance");
+                        require(swapTokenRatio < tokenB.balanceOf(address(this)), "Amount that take must be lower than pool balance");
 
                         tokenA.approve(address(this), amountIn);
 
@@ -150,12 +150,12 @@ contract Pool
 
                         require(amountIn > 0, "Amount must be greater than 0");
                         require(amountIn < tokenB.balanceOf(msg.sender), "You do not have enough tokenB for this swap");
-                        require(amountIn < tokenB.balanceOf(address(this)), "Amount must be lower than pool balance");
+                        require(swapTokenRatio < tokenA.balanceOf(address(this)), "Amount that take must be lower than pool balance");
 
                         tokenB.approve(address(this), amountIn);
 
-                        tokenB.transferFrom(address(this), msg.sender, amountIn);
-                        tokenA.transferFrom(msg.sender, address(this), swapTokenRatio);
+                        tokenB.transferFrom(msg.sender, address(this, amountIn);
+                        tokenA.transferFrom(address(this),msg.sender, swapTokenRatio);
                     }
                 }
 
