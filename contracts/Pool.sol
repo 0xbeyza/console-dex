@@ -16,6 +16,8 @@ contract Pool
             uint256 balanceA;
             uint256 balanceB;
             
+            uint256 constantProduct;
+            
 
     mapping(address => userBalance) public balances;
 
@@ -29,6 +31,8 @@ contract Pool
                 tokenB.approve(address(this), 100);
                 tokenA.transferFrom(msg.sender, address(this), 100);
                 tokenB.transferFrom(msg.sender, address(this), 100);
+
+                constantProduct = tokenA.balanceOf(address(this))*tokenB.balanceOf(address(this));
             }
 
     // 1. Add Liquidity
@@ -49,6 +53,8 @@ contract Pool
 
                     tokenA.transferFrom(msg.sender, address(this), amount);   
                     tokenB.transferFrom(msg.sender,address(this), amount*ratio);
+
+                    constantProduct = tokenA.balanceOf(address(this))*tokenB.balanceOf(address(this));
                 }
                 
                 // Add Liquidity for tokenB
@@ -67,6 +73,8 @@ contract Pool
 
                     tokenB.transferFrom(msg.sender, address(this), amount);   
                     tokenA.transferFrom(msg.sender,address(this), amount*ratio);
+
+                    constantProduct = tokenA.balanceOf(address(this))*tokenB.balanceOf(address(this));
                 }
 
     // 2. Remove Liqudity
@@ -89,6 +97,8 @@ contract Pool
 
                     tokenA.transferFrom(address(this), msg.sender, amount);
                     tokenB.transferFrom(address(this), msg.sender, amount*ratio);
+
+                    constantProduct = tokenA.balanceOf(address(this))*tokenB.balanceOf(address(this));
                 }
 
                 // Remove Liquidity for tokenB
@@ -109,23 +119,29 @@ contract Pool
 
                     tokenB.transferFrom(address(this), msg.sender, amount);
                     tokenA.transferFrom(address(this), msg.sender, amount*ratio);
+
+                    constantProduct = tokenA.balanceOf(address(this))*tokenB.balanceOf(address(this));
                 }
 
     // 3. Swap Tokens
 
-                function swap(uint256 amountIn, bool swapToken0ForToken1) public 
+                function swap(uint256 amountIn, bool swapTokenAForTokenB) public 
                 {
-                    if(swapToken0ForToken1)
+                    if(swapTokenAForTokenB)
                     {
                         require(amountIn < tokenA.balanceOf(address(this)), "Amount must be lower than pool balance");
+
                         tokenA.approve(address(this), amountIn);
+
                         tokenA.transferFrom(address(this), msg.sender, amountIn);
                         tokenB.transferFrom(msg.sender, address(this), amountIn*ratio);
                     }
                     else
                     {
                         require(amountIn < tokenB.balanceOf(address(this)), "Amount must be lower than pool balance");
+
                         tokenB.approve(address(this), amountIn);
+
                         tokenB.transferFrom(address(this), msg.sender, amountIn);
                         tokenA.transferFrom(msg.sender, address(this), amountIn*ratio);
                     }
