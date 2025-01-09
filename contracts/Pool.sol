@@ -67,7 +67,7 @@ contract Pool
                     require(amount > 0, "Amount must be greater than 0");
                     require(tokenA.balanceOf(msg.sender) >= amount*ratio, "For this amount of tokenB, the pool does not have enough tokenA");
                 
-                    tokenB.approve(address(this), amount);              // Burada approve edilen token kontratın mı yoksa çağıran kişiye mi ait 
+                    tokenB.approve(address(this), amount);              
                     tokenA.approve(address(this), amount*ratio);   
 
                     balanceB += amount;
@@ -92,7 +92,7 @@ contract Pool
                     require(amount < tokenA.balanceOf(addres(this)), "Amount must be lower than pool balance");
                     require(amount*ratio < tokenB.balanceOf(addres(this)), "For this amount of tokenA, the pool does not have enough tokenB");
 
-                    tokenA.approve(address(this), amount);             // Burada approve edilen token kontratın mı yoksa çağıran kişiye mi ait 
+                    tokenA.approve(address(this), amount);             
                     tokenB.approve(address(this), amount*ratio);
 
                     balanceA -= amount;
