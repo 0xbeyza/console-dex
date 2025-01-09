@@ -17,7 +17,7 @@ contract Pool
             uint256 balanceB;
             
             uint256 constantProduct;
-            
+            uint swapTokenRatio;
 
     mapping(address => userBalance) public balances;
 
@@ -38,6 +38,7 @@ contract Pool
     // 1. Add Liquidity
 
                  //  Add Liquidity for tokenA
+
                 function addLiquidityA(uint256 amount) public 
                 { 
                     ratio = tokenB.balanceOf(address(this))/tokenA.balanceOf(address(this));
@@ -45,19 +46,20 @@ contract Pool
                     require(amount > 0, "Amount must be greater than 0");
                     require(tokenB.balanceOf(msg.sender) >= amount*ratio, "For this amount of tokenA, you do not have enough tokenB");
                 
-                    tokenA.approve(address(this), amount);              // Burada approve edilen token kontratın mı yoksa çağıran kişiye mi ait 
-                    tokenB.approve(address(this), amount*ratio);   
+                    tokenA.approve(address(this), amount);              // Burada approve edilen token kontratın mı yoksa çağıran kişiye mi ait ?
+                    tokenB.approve(address(this), amount*ratio);        // Burada approve edilen şey = token sahibi harcaması için contrata harcama yetkisi veriyor !!!
                     
                     balanceA += amount;
                     balanceB += amount*ratio;
 
-                    tokenA.transferFrom(msg.sender, address(this), amount);   
-                    tokenB.transferFrom(msg.sender,address(this), amount*ratio);
+                    tokenA.transferFrom(msg.sender, address(this), amount);             // Burada transfer işleminde token sahibi contrata transfer ediyor   !!!
+                    tokenB.transferFrom(msg.sender,address(this), amount*ratio);        // Bu transfer işlemini de approve alan contract token sahibi için yapıyor !!!
 
                     constantProduct = tokenA.balanceOf(address(this))*tokenB.balanceOf(address(this));
                 }
                 
                 // Add Liquidity for tokenB
+
                 function addLiquidityB(uint256 amount) public 
                 { 
                     ratio = tokenA.balanceOf(address(this))/tokenB.balanceOf(address(this));
@@ -85,7 +87,8 @@ contract Pool
                 {
                     ratio = tokenA.balanceOf(address(this))/tokenB.balanceOf(address(this));
 
-                    require(balanceA >= amount && balanceB >= amount*ratio, "You dont need have enough likidite for removing");
+                    require(amount > 0, "Amount must be greater than 0");
+                    require(balanceA >= amount && balanceB >= amount*ratio, "You dont need have enough liqudity for removing");
                     require(amount < tokenA.balanceOf(addres(this)), "Amount must be lower than pool balance");
                     require(amount*ratio < tokenB.balanceOf(addres(this)), "For this amount of tokenA, the pool does not have enough tokenB");
 
@@ -107,7 +110,8 @@ contract Pool
                 {
                     ratio = tokenB.balanceOf(address(this))/tokenA.balanceOf(address(this));
 
-                    require(balanceB >= amount && balanceA >= amount*ratio, "You dont need have enough likidite for removing");
+                    require(amount > 0, "Amount must be greater than 0");
+                    require(balanceB >= amount && balanceA >= amount*ratio, "You dont need have enough liqudity for removing");
                     require(amount < tokenB.balanceOf(addres(this)), "Amount must be lower than pool balance");
                     require(amount*ratio < tokenA.balanceOf(addres(this)), "For this amount of tokenB, the pool does not have enough tokenA");
 
@@ -129,21 +133,29 @@ contract Pool
                 {
                     if(swapTokenAForTokenB)
                     {
+                        swapTokenRatio = constantProduct/tokenA.balanceOf(address(this));
+
+                        require(amountIn > 0, "Amount must be greater than 0");
+                        require(amountIn < tokenA.balanceOf(msg.sender), "You do not have enough tokenA for this swap");
                         require(amountIn < tokenA.balanceOf(address(this)), "Amount must be lower than pool balance");
 
                         tokenA.approve(address(this), amountIn);
 
-                        tokenA.transferFrom(address(this), msg.sender, amountIn);
-                        tokenB.transferFrom(msg.sender, address(this), amountIn*ratio);
+                        tokenA.transferFrom(msg.sender, address(this), amountIn);
+                        tokenB.transferFrom(address(this),msg.sender, swapTokenRatio);
                     }
                     else
                     {
+                        swapTokenRatio = constantProduct/tokenB.balanceOf(address(this));
+
+                        require(amountIn > 0, "Amount must be greater than 0");
+                        require(amountIn < tokenB.balanceOf(msg.sender), "You do not have enough tokenB for this swap");
                         require(amountIn < tokenB.balanceOf(address(this)), "Amount must be lower than pool balance");
 
                         tokenB.approve(address(this), amountIn);
 
                         tokenB.transferFrom(address(this), msg.sender, amountIn);
-                        tokenA.transferFrom(msg.sender, address(this), amountIn*ratio);
+                        tokenA.transferFrom(msg.sender, address(this), swapTokenRatio);
                     }
                 }
 
