@@ -19,6 +19,11 @@ contract Pool
             uint256 constantProduct;
             uint swapTokenRatio;
 
+    struct userBalance {
+        uint256 tokenA;
+        uint256 tokenB;
+    }
+
     mapping(address => userBalance) public balances;
 
     // Constructor
@@ -83,14 +88,14 @@ contract Pool
 
                 // Remove Liquidity for tokenA
                 
-                function removeLiquidity(uint256 amount) public 
+                function removeLiquidityA(uint256 amount) public 
                 {
                     ratio = tokenA.balanceOf(address(this))/tokenB.balanceOf(address(this));
 
                     require(amount > 0, "Amount must be greater than 0");
                     require(balanceA >= amount && balanceB >= amount*ratio, "You dont need have enough liqudity for removing");
-                    require(amount < tokenA.balanceOf(addres(this)), "Amount must be lower than pool balance");
-                    require(amount*ratio < tokenB.balanceOf(addres(this)), "For this amount of tokenA, the pool does not have enough tokenB");
+                    require(amount < tokenA.balanceOf(address(this)), "Amount must be lower than pool balance");
+                    require(amount*ratio < tokenB.balanceOf(address(this)), "For this amount of tokenA, the pool does not have enough tokenB");
 
                     tokenA.approve(address(this), amount);             
                     tokenB.approve(address(this), amount*ratio);
@@ -106,14 +111,14 @@ contract Pool
 
                 // Remove Liquidity for tokenB
 
-                function removeLiquidity(uint256 amount) public 
+                function removeLiquidityB(uint256 amount) public 
                 {
                     ratio = tokenB.balanceOf(address(this))/tokenA.balanceOf(address(this));
 
                     require(amount > 0, "Amount must be greater than 0");
                     require(balanceB >= amount && balanceA >= amount*ratio, "You dont need have enough liqudity for removing");
-                    require(amount < tokenB.balanceOf(addres(this)), "Amount must be lower than pool balance");
-                    require(amount*ratio < tokenA.balanceOf(addres(this)), "For this amount of tokenB, the pool does not have enough tokenA");
+                    require(amount < tokenB.balanceOf(address(this)), "Amount must be lower than pool balance");
+                    require(amount*ratio < tokenA.balanceOf(address(this)), "For this amount of tokenB, the pool does not have enough tokenA");
 
                     tokenB.approve(address(this), amount);             // Burada approve edilen token kontratın mı yoksa çağıran kişiye mi ait 
                     tokenA.approve(address(this), amount*ratio);
